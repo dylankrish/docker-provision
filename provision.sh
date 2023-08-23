@@ -39,18 +39,29 @@ printf "Detected: %s\n" "$os"
 color_text "STEP 1: Install Docker" "$ORANGE"
 # Installation steps provided by Digital Ocean https://www.digitalocean.com/community/tutorial-collections/how-to-install-and-use-docker
 # as well as the official docker documentation https://docs.docker.com/engine/install/
+# TODO: uninstall old versions
 if [ "$os" == "ubuntu" ]; then
-    # TODO: fix ubuntu
+    # TODO: add verification for docker package repo
+    # if OS is 20.04
+    if grep -qs "focal" /etc/os-release; then
         sudo apt update
         sudo apt install apt-transport-https ca-certificates curl software-properties-common
         curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    # find the version of ubuntu and store it in a variable
-    ubuntu_codename=$(cat /etc/os-release | grep -oP '(?<=VERSION_CODENAME=")[^"]*')
-    printf "Ubuntu version: %s\n" "$ubuntu_codename"
-    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu "$ubuntu_codename" stable"
-    sudo apt install docker-ce
-    sudo systemctl enable --now docker
-    sudo usermod -aG docker ${USER}
+        sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+        sudo apt update
+        sudo apt install docker-ce
+        sudo systemctl enable --now docker
+        sudo usermod -aG docker ${USER}
+    # else if OS is 22.04
+    elif grep -qs "bionic" /etc/os-release; then
+        sudo apt update
+        sudo apt install apt-transport-https ca-certificates curl software-properties-common
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+        sudo apt update
+        sudo apt install docker-ce
+        sudo systemctl enable --now docker
+        sudo usermod -aG docker ${USER}
 elif [ "$os" == "debian" ]; then
     # TODO: finish debian
     sudo apt update
