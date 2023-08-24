@@ -40,19 +40,19 @@ color_text "STEP 1: Install Docker" "$ORANGE"
 # Installation steps provided by Digital Ocean https://www.digitalocean.com/community/tutorial-collections/how-to-install-and-use-docker
 # as well as the official docker documentation https://docs.docker.com/engine/install/
 # TODO: uninstall old versions
+# TODO: hello-world test container
 if [ "$os" == "ubuntu" ]; then
     # TODO: add verification for docker package repo
-        for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do sudo apt-get remove $pkg; done
-        sudo apt update
-        sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
-        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-        sudo apt update
-        sudo apt install docker-ce docker-ce-cli containerd.io -y
-        sudo systemctl enable --now docker
-        sudo usermod -aG docker ${USER}
+    for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do sudo apt-get remove $pkg; done
+    sudo apt update
+    sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt update
+    sudo apt install docker-ce docker-ce-cli containerd.io -y
+    sudo systemctl enable --now docker
+    sudo usermod -aG docker ${USER}
 elif [ "$os" == "debian" ]; then
-    # TODO: finish debian
     sudo apt update
     sudo apt install apt-transport-https ca-certificates curl gnupg2 software-properties-common -y
     curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
@@ -81,5 +81,12 @@ fi
 
 color_text "STEP 2: Install Portainer Agent" "$ORANGE"
 
-# run /bin/bash on a docker container to test if docker is working with library/ubuntu
-# docker run -it ubuntu /bin/bash
+printf "Please make sure your Portainer instance is up to date! Otherwise, this agent will be incompatible.\n"
+
+docker run -d \
+  -p 9001:9001 \
+  --name portainer_agent \
+  --restart=always \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /var/lib/docker/volumes:/var/lib/docker/volumes \
+  portainer/agent:latest
