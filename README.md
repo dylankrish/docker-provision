@@ -1,2 +1,3 @@
 # docker-provision
-Provision Docker containers with Bash
+
+Script to provision a docker host with Docker and Portainer Agent.
