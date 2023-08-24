@@ -54,18 +54,23 @@ if [ "$os" == "ubuntu" ]; then
 elif [ "$os" == "debian" ]; then
     # TODO: finish debian
     sudo apt update
-    sudo apt install apt-transport-https ca-certificates curl gnupg2 software-properties-common
-
+    sudo apt install apt-transport-https ca-certificates curl gnupg2 software-properties-common -y
+    curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
+    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
+    sudo apt update
+    sudo apt install docker-ce docker-ce-cli containerd.io -y
+    sudo systemctl enable --now docker
+    sudo usermod -aG docker ${USER}
 elif [ "$os" == "rhel" ]; then
     sudo dnf check-update
     sudo dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-    sudo dnf install docker-ce docker-ce-cli containerd.io
+    sudo dnf -y install docker-ce docker-ce-cli containerd.io
     sudo systemctl enable --now docker
     sudo usermod -aG docker ${USER}
 elif [ "$os" == "fedora" ]; then
     sudo dnf -y install dnf-plugins-core
     sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
-    sudo dnf install docker-ce docker-ce-cli containerd.io
+    sudo dnf -y install docker-ce docker-ce-cli containerd.io
     sudo systemctl enable --now docker
     sudo usermod -aG docker ${USER}
 elif [ "$os" == "arch" ]; then
