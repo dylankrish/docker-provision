@@ -53,10 +53,11 @@ if [ "$os" == "ubuntu" ]; then
     sudo systemctl enable --now docker
     sudo usermod -aG docker ${USER}
 elif [ "$os" == "debian" ]; then
-    sudo apt update
-    sudo apt install apt-transport-https ca-certificates curl gnupg2 software-properties-common -y
-    curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
-    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
+    sudo apt-get update
+    sudo apt-get install ca-certificates curl gnupg
+    sudo install -m 0755 -d /etc/apt/keyrings
+    curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    sudo chmod a+r /etc/apt/keyrings/docker.gpg
     sudo apt update
     sudo apt install docker-ce docker-ce-cli containerd.io -y
     sudo systemctl enable --now docker
