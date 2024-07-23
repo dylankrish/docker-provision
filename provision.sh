@@ -92,3 +92,10 @@ docker run -d \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v /var/lib/docker/volumes:/var/lib/docker/volumes \
   portainer/agent:latest
+
+color_text "STEP 2: Install Watchtower for Automatic Updates" "$ORANGE"
+
+docker run --detach \
+    --name watchtower \
+    --volume /var/run/docker.sock:/var/run/docker.sock \
+    containrrr/watchtower
